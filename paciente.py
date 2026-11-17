@@ -11,8 +11,14 @@ class Paciente(Persona):
     def __init__(self, id_persona, nombres, apellidos, dni, telefono):
         super().__init__(id_persona, nombres, apellidos)
 
-        self.__dni = dni
-        self.__telefono = telefono
+        if not isinstance(dni, str) or not dni.strip():
+            raise ValueError("El DNI no puede estar vacío.")
+
+        if not isinstance(telefono, str) or not telefono.strip():
+            raise ValueError("El teléfono no puede estar vacío.")
+
+        self.__dni = dni.strip()
+        self.__telefono = telefono.strip()
 
     # Métodos de acceso
     def obtener_dni(self):
@@ -23,10 +29,10 @@ class Paciente(Persona):
 
     # Método para actualizar el teléfono
     def actualizar_telefono(self, nuevo_telefono):
-        if not nuevo_telefono.strip():
-            raise ValueError("El teléfono no puede estar vacío.")
+        if not isinstance(nuevo_telefono, str) or not nuevo_telefono.strip():
+            raise ValueError("El teléfono debe ser un texto válido.")
 
-        self.__telefono = nuevo_telefono
+        self.__telefono = nuevo_telefono.strip()
 
     # Método para obtener todos los datos del paciente
     def obtener_datos(self):
