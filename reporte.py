@@ -5,6 +5,13 @@ class Reporte:
     """
 
     def __init__(self, gestor_pacientes, gestor_citas, gestor_atenciones):
+        if any(gestor is None for gestor in (
+            gestor_pacientes,
+            gestor_citas,
+            gestor_atenciones
+        )):
+            raise ValueError("Todos los gestores deben ser válidos.")
+
         self.__gestor_pacientes = gestor_pacientes
         self.__gestor_citas = gestor_citas
         self.__gestor_atenciones = gestor_atenciones
@@ -19,12 +26,11 @@ class Reporte:
 
     # Obtener la lista de citas pendientes
     def obtener_citas_pendientes(self):
-        citas = self.__gestor_citas.listar_citas()
-
-        return list(filter(
-            lambda cita: cita["estado"] == "Pendiente",
-            citas
-        ))
+        return [
+            cita
+            for cita in self.__gestor_citas.listar_citas()
+            if cita["estado"] == "Pendiente"
+        ]
 
     # Generar un reporte de pacientes
     def generar_reporte_pacientes(self):
