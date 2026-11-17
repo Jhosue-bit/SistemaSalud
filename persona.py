@@ -6,9 +6,18 @@ class Persona:
     """
 
     def __init__(self, id_persona, nombres, apellidos):
-        self.__id = id_persona
-        self.__nombres = nombres
-        self.__apellidos = apellidos
+        if not isinstance(id_persona, str) or not id_persona.strip():
+            raise ValueError("El ID de la persona no puede estar vacío.")
+
+        if not isinstance(nombres, str) or not nombres.strip():
+            raise ValueError("Los nombres no pueden estar vacíos.")
+
+        if not isinstance(apellidos, str) or not apellidos.strip():
+            raise ValueError("Los apellidos no pueden estar vacíos.")
+
+        self.__id = id_persona.strip()
+        self.__nombres = nombres.strip()
+        self.__apellidos = apellidos.strip()
 
     # Métodos de acceso (getters)
     def obtener_id(self):
