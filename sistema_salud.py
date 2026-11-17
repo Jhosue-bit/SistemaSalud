@@ -66,54 +66,69 @@ class SistemaSalud:
         citas = self.__conexion.cargar_datos("citas.json")
         atenciones = self.__conexion.cargar_datos("atenciones.json")
 
-        # Recuperar pacientes
-        for datos in pacientes:
-            paciente = Paciente(
-                datos["id"],
-                datos["nombres"],
-                datos["apellidos"],
-                datos["dni"],
-                datos["telefono"]
-            )
+        if not all(isinstance(datos, list) for datos in (
+            pacientes, citas, atenciones
+        )):
+            raise ValueError("Los archivos JSON deben contener listas.")
 
-            self.__gestor_pacientes.registrar_paciente(paciente)
+        try:
+            # Recuperar pacientes
+            for datos in pacientes:
+                paciente = Paciente(
+                    datos["id"],
+                    datos["nombres"],
+                    datos["apellidos"],
+                    datos["dni"],
+                    datos["telefono"]
+                )
 
-        # Recuperar citas
-        for datos in citas:
-            id_paciente = datos["paciente"]["id"]
-            paciente = self.__gestor_pacientes.buscar_paciente(id_paciente)
+                self.__gestor_pacientes.registrar_paciente(paciente)
 
-            if paciente is None:
-                raise ValueError("No se encontró el paciente de una cita.")
+            # Recuperar citas
+            for datos in citas:
+                id_paciente = datos["paciente"]["id"]
+                paciente = self.__gestor_pacientes.buscar_paciente(id_paciente)
 
-            cita = Cita(
-                datos["id_cita"],
-                paciente,
-                datos["fecha"],
-                datos["hora"],
-                datos["motivo"]
-            )
+                if paciente is None:
+                    raise ValueError(
+                        "No se encontró el paciente de una cita."
+                    )
 
-            cita.cambiar_estado(datos["estado"])
-            self.__gestor_citas.registrar_cita(cita)
+                cita = Cita(
+                    datos["id_cita"],
+                    paciente,
+                    datos["fecha"],
+                    datos["hora"],
+                    datos["motivo"]
+                )
 
-        # Recuperar atenciones médicas
-        for datos in atenciones:
-            id_cita = datos["cita"]["id_cita"]
-            cita = self.__gestor_citas.buscar_cita(id_cita)
+                cita.cambiar_estado(datos["estado"])
+                self.__gestor_citas.registrar_cita(cita)
 
-            if cita is None:
-                raise ValueError("No se encontró la cita de una atención.")
+            # Recuperar atenciones médicas
+            for datos in atenciones:
+                id_cita = datos["cita"]["id_cita"]
+                cita = self.__gestor_citas.buscar_cita(id_cita)
 
-            atencion = AtencionMedica(
-                datos["id_atencion"],
-                cita,
-                datos["diagnostico"],
-                datos["tratamiento"],
-                datos["observaciones"]
-            )
+                if cita is None:
+                    raise ValueError(
+                        "No se encontró la cita de una atención."
+                    )
 
-            self.__gestor_atenciones.registrar_atencion(atencion)
+                atencion = AtencionMedica(
+                    datos["id_atencion"],
+                    cita,
+                    datos["diagnostico"],
+                    datos["tratamiento"],
+                    datos["observaciones"]
+                )
+
+                self.__gestor_atenciones.registrar_atencion(atencion)
+
+        except (KeyError, TypeError) as error:
+            raise ValueError(
+                "Los archivos JSON contienen datos incompletos o inválidos."
+            ) from error
 
     # Mostrar resumen general
     def mostrar_resumen(self):
