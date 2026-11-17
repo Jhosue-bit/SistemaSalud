@@ -21,6 +21,20 @@ def mostrar_menu():
     print("===================================")
 
 
+def mostrar_registros(titulo, registros):
+    print(f"\n{titulo}")
+    print("=" * 50)
+
+    if not registros:
+        print("No hay registros disponibles.")
+        return
+
+    for registro in registros:
+        for campo, valor in registro.items():
+            print(f"{campo.replace('_', ' ').capitalize()}: {valor}")
+        print("-" * 50)
+
+
 def ejecutar_sistema():
     sistema = SistemaSalud()
 
@@ -42,7 +56,9 @@ def ejecutar_sistema():
                 dni = input("DNI: ").strip()
                 telefono = input("Teléfono: ").strip()
 
-                if not all([id_paciente, nombres, apellidos, dni, telefono]):
+                if not all([
+                    id_paciente, nombres, apellidos, dni, telefono
+                ]):
                     raise ValueError("Todos los campos son obligatorios.")
 
                 paciente = Paciente(
@@ -53,8 +69,10 @@ def ejecutar_sistema():
                 print("Paciente registrado correctamente.")
 
             elif opcion == "2":
-                print("\nLISTA DE PACIENTES")
-                print(gestor_pacientes.listar_pacientes())
+                mostrar_registros(
+                    "LISTA DE PACIENTES",
+                    gestor_pacientes.listar_pacientes()
+                )
 
             elif opcion == "3":
                 print("\nREGISTRAR CITA")
@@ -65,24 +83,24 @@ def ejecutar_sistema():
                 hora = input("Hora: ").strip()
                 motivo = input("Motivo: ").strip()
 
+                if not all([id_cita, id_paciente, fecha, hora, motivo]):
+                    raise ValueError("Todos los campos son obligatorios.")
+
                 paciente = gestor_pacientes.buscar_paciente(id_paciente)
 
                 if paciente is None:
                     raise ValueError("No se encontró el paciente.")
 
-                if not all([id_cita, fecha, hora, motivo]):
-                    raise ValueError("Todos los campos son obligatorios.")
-
-                cita = Cita(
-                    id_cita, paciente, fecha, hora, motivo
-                )
+                cita = Cita(id_cita, paciente, fecha, hora, motivo)
 
                 gestor_citas.registrar_cita(cita)
                 print("Cita registrada correctamente.")
 
             elif opcion == "4":
-                print("\nLISTA DE CITAS")
-                print(gestor_citas.listar_citas())
+                mostrar_registros(
+                    "LISTA DE CITAS",
+                    gestor_citas.listar_citas()
+                )
 
             elif opcion == "5":
                 print("\nREGISTRAR ATENCIÓN MÉDICA")
@@ -93,16 +111,18 @@ def ejecutar_sistema():
                 tratamiento = input("Tratamiento: ").strip()
                 observaciones = input("Observaciones: ").strip()
 
+                if not all([
+                    id_atencion, id_cita, diagnostico, tratamiento
+                ]):
+                    raise ValueError(
+                        "Los campos ID, cita, diagnóstico y tratamiento "
+                        "son obligatorios."
+                    )
+
                 cita = gestor_citas.buscar_cita(id_cita)
 
                 if cita is None:
                     raise ValueError("No se encontró la cita.")
-
-                if not all([
-                    id_atencion, diagnostico,
-                    tratamiento
-                ]):
-                    raise ValueError("Los campos ID, diagnóstico y tratamiento son obligatorios.")
 
                 atencion = AtencionMedica(
                     id_atencion, cita, diagnostico,
@@ -115,12 +135,19 @@ def ejecutar_sistema():
                 print("Atención médica registrada correctamente.")
 
             elif opcion == "6":
-                print("\nLISTA DE ATENCIONES MÉDICAS")
-                print(gestor_atenciones.listar_atenciones())
+                mostrar_registros(
+                    "LISTA DE ATENCIONES MÉDICAS",
+                    gestor_atenciones.listar_atenciones()
+                )
 
             elif opcion == "7":
                 print("\nRESUMEN GENERAL")
-                print(sistema.mostrar_resumen())
+                print("=" * 35)
+
+                resumen = sistema.mostrar_resumen()
+
+                for concepto, cantidad in resumen.items():
+                    print(f"{concepto.replace('_', ' ').capitalize()}: {cantidad}")
 
             elif opcion == "8":
                 sistema.guardar_datos()
