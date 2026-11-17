@@ -9,6 +9,9 @@ class GestorCitas:
 
     # Registrar una cita
     def registrar_cita(self, cita):
+        if cita is None:
+            raise ValueError("Debe proporcionar una cita válida.")
+
         for existente in self.__citas:
             if existente.obtener_id() == cita.obtener_id():
                 raise ValueError("Ya existe una cita con ese ID.")
@@ -18,24 +21,23 @@ class GestorCitas:
 
     # Buscar una cita por su ID
     def buscar_cita(self, id_cita):
-        resultado = filter(
-            lambda cita: cita.obtener_id() == id_cita,
-            self.__citas
-        )
+        for cita in self.__citas:
+            if cita.obtener_id() == id_cita:
+                return cita
 
-        return next(resultado, None)
+        return None
 
     # Listar todas las citas
     def listar_citas(self):
-        return list(map(
-            lambda cita: cita.obtener_datos(),
-            self.__citas
-        ))
+        return [
+            cita.obtener_datos()
+            for cita in self.__citas
+        ]
 
     # Obtener los objetos Cita originales
     def obtener_citas(self):
         return self.__citas.copy()
-    
+
     # Contar las citas registradas
     def contar_citas(self):
         return len(self.__citas)
