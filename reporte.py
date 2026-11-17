@@ -26,11 +26,12 @@ class Reporte:
 
     # Obtener la lista de citas pendientes
     def obtener_citas_pendientes(self):
-        return [
-            cita
-            for cita in self.__gestor_citas.listar_citas()
-            if cita["estado"] == "Pendiente"
-        ]
+        citas = self.__gestor_citas.listar_citas()
+
+        return list(filter(
+        lambda cita: cita["estado"] == "Pendiente",
+        citas
+    ))
 
     # Generar un reporte de pacientes
     def generar_reporte_pacientes(self):
