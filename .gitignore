@@ -1,0 +1,14 @@
+# Archivos temporales de Python
+__pycache__/
+*.py[cod]
+
+# Datos locales del sistema
+datos/*.json
+Datos/*.json
+
+# Entornos virtuales
+.venv/
+venv/
+
+# Configuración local de VS Code
+.vscode/
