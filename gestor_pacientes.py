@@ -9,6 +9,9 @@ class GestorPacientes:
 
     # Registrar un paciente
     def registrar_paciente(self, paciente):
+        if paciente is None:
+            raise ValueError("Debe proporcionar un paciente válido.")
+
         for existente in self.__pacientes:
             if existente.obtener_id() == paciente.obtener_id():
                 raise ValueError("Ya existe un paciente con ese ID.")
@@ -21,19 +24,18 @@ class GestorPacientes:
 
     # Buscar un paciente por su ID
     def buscar_paciente(self, id_paciente):
-        resultado = filter(
-            lambda paciente: paciente.obtener_id() == id_paciente,
-            self.__pacientes
-        )
+        for paciente in self.__pacientes:
+            if paciente.obtener_id() == id_paciente:
+                return paciente
 
-        return next(resultado, None)
+        return None
 
     # Listar todos los pacientes
     def listar_pacientes(self):
-        return list(map(
-            lambda paciente: paciente.obtener_datos(),
-            self.__pacientes
-        ))
+        return [
+            paciente.obtener_datos()
+            for paciente in self.__pacientes
+        ]
 
     # Obtener los objetos Paciente originales
     def obtener_pacientes(self):
@@ -41,10 +43,4 @@ class GestorPacientes:
 
     # Obtener la cantidad de pacientes registrados
     def contar_pacientes(self):
-        from functools import reduce
-
-        return reduce(
-            lambda total, paciente: total + 1,
-            self.__pacientes,
-            0
-        )
+        return len(self.__pacientes)
